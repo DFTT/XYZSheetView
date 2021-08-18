@@ -36,6 +36,8 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
         _backAlpha    = 0.3;
         _showDuration = 0.2;
         _hideDuration = 0.2;
+        
+        self.autoAvoidKeyboard = YES;
     }
     return self;
 }
@@ -180,6 +182,50 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
         _layoutStackView.layer.mask = mask;
     }
 }
+#pragma mark - avoidKeyBoard
+- (void)setAutoAvoidKeyboard:(BOOL)autoAvoidKeyboard {
+    if (_autoAvoidKeyboard != autoAvoidKeyboard) {
+        _autoAvoidKeyboard = autoAvoidKeyboard;
+        if (autoAvoidKeyboard) {
+            [self observeKeyboardNotify];
+        }else {
+            [self rmKeyboardNotifyObserver];
+        }
+    }
+}
+- (void)observeKeyboardNotify {
+    [self rmKeyboardNotifyObserver];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reciveKeyboardNotification:) name:UIKeyboardWillChangeFrameNotification object:nil];
+}
+- (void)rmKeyboardNotifyObserver {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
+}
+- (void)reciveKeyboardNotification:(NSNotification *)notify {
+    if (self.window == nil) {
+        return;
+    }
+    CGRect kbToRect = [notify.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGFloat animationDuration = [notify.userInfo[UIKeyboardAnimationDurationUserInfoKey] floatValue];
+    
+    BOOL kbToShow = CGRectGetMinY(kbToRect) < [UIScreen mainScreen].bounds.size.height;
+    
+    CGRect alertRect = [self.layoutStackView convertRect:self.layoutStackView.bounds toView:self.window];
+    
+    CGFloat offsetY = CGRectGetMaxY(alertRect) - CGRectGetMinY(kbToRect);
+    CGAffineTransform transf = CGAffineTransformIdentity;
+    if (kbToShow) {
+        if (offsetY <= 0) {
+            return;
+        }
+        transf = CGAffineTransformMakeTranslation(0, -offsetY + self.avoidKeyboardOffsetY);
+    }
+    
+    [UIView animateWithDuration:animationDuration > 0 ? animationDuration : 0.2 animations:^{
+        self.layoutStackView.transform = transf;
+    }];
+}
+
 
 #pragma mark - Lazy
 - (nullable UIView *)topBarView {

@@ -62,13 +62,14 @@
 - (void)btn2Action {
     SimpleSheet *sheet = [[SimpleSheet alloc] init];
     sheet.tHeight = 200;
+    sheet.avoidKeyboardOffsetY = 190;
     [sheet showToView:self.view];
 }
 
 - (void)btn3Action {
     SimpleSheet *sheet = [[SimpleSheet alloc] init];
     sheet.tHeight = 2000;
-    sheet.topCornerRadius = 20;
+    sheet.topCornerRadius = 16;
     [sheet showToView:self.view];
 }
 

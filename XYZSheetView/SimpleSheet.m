@@ -21,6 +21,11 @@
     UIView *view = [[UIView alloc] init];
     view.backgroundColor = [UIColor orangeColor];
     [view.heightAnchor constraintEqualToConstant:_tHeight].active = YES;
+    
+    UITextField *tf = [[UITextField alloc] init];
+    tf.frame = CGRectMake(10, 20, 200, 100);
+    tf.placeholder = @"我是一个输入框";
+    [view addSubview:tf];
     return view;
 }
 

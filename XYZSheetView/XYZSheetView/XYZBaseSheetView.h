@@ -42,6 +42,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSTimeInterval hideDuration;
 
 
+/// 自动躲避键盘 (键盘弹出时 自动往上便宜键盘的高度)
+/// defult YES
+@property (nonatomic, assign) BOOL autoAvoidKeyboard;
+
+/// 自动躲避键盘时修正偏移量
+/// 键盘弹出时 默认自动往上偏移键盘的高度 此值为负数时 会增加向上偏移的距离, 此值为正数时 会减小向上偏移的距离
+/// defult 0
+@property (nonatomic, assign) CGFloat avoidKeyboardOffsetY;
+
+
 /**
  展示 (if showing, nothing todo)
  @param view 只能是UIViewController.view 或 UIWindow
