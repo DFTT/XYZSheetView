@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5B71B05926EB58CC000F1751 /* UIView+XYZFindFirstResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B71B05826EB58CC000F1751 /* UIView+XYZFindFirstResponder.m */; };
 		5B7A791525F21CB900543F70 /* SimpleSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B7A791425F21CB900543F70 /* SimpleSheet.m */; };
 		5BC7ADFF25E50CED00F01488 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BC7ADFE25E50CED00F01488 /* AppDelegate.m */; };
 		5BC7AE0525E50CED00F01488 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BC7AE0425E50CED00F01488 /* ViewController.m */; };
@@ -19,6 +20,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5B71B05726EB58CC000F1751 /* UIView+XYZFindFirstResponder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIView+XYZFindFirstResponder.h"; sourceTree = "<group>"; };
+		5B71B05826EB58CC000F1751 /* UIView+XYZFindFirstResponder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIView+XYZFindFirstResponder.m"; sourceTree = "<group>"; };
 		5B7A791325F21CB900543F70 /* SimpleSheet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SimpleSheet.h; sourceTree = "<group>"; };
 		5B7A791425F21CB900543F70 /* SimpleSheet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SimpleSheet.m; sourceTree = "<group>"; };
 		5BC7ADFA25E50CED00F01488 /* XYZSheetView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XYZSheetView.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -90,6 +93,8 @@
 				5BC7AE1A25E511CE00F01488 /* XYZListSheet.m */,
 				5BC7AE1D25E51E1300F01488 /* XYZBaseSheetView.h */,
 				5BC7AE1E25E51E1300F01488 /* XYZBaseSheetView.m */,
+				5B71B05726EB58CC000F1751 /* UIView+XYZFindFirstResponder.h */,
+				5B71B05826EB58CC000F1751 /* UIView+XYZFindFirstResponder.m */,
 			);
 			path = XYZSheetView;
 			sourceTree = "<group>";
@@ -166,6 +171,7 @@
 				5BC7AE1F25E51E1300F01488 /* XYZBaseSheetView.m in Sources */,
 				5BC7AE1B25E511CE00F01488 /* XYZListSheet.m in Sources */,
 				5BC7AE0525E50CED00F01488 /* ViewController.m in Sources */,
+				5B71B05926EB58CC000F1751 /* UIView+XYZFindFirstResponder.m in Sources */,
 				5BC7ADFF25E50CED00F01488 /* AppDelegate.m in Sources */,
 				5BC7AE1025E50CF000F01488 /* main.m in Sources */,
 				5B7A791525F21CB900543F70 /* SimpleSheet.m in Sources */,
@@ -318,7 +324,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.xyz.sheet.XYZSheetView;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -337,7 +343,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.xyz.sheet.XYZSheetView;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";

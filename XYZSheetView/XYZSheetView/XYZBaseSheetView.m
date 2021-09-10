@@ -6,6 +6,8 @@
 //
 
 #import "XYZBaseSheetView.h"
+#import "UIView+XYZFindFirstResponder.h"
+
 
 inline CGFloat XYZSafeAreaBottomHeight(void) {
     CGFloat bottom = 0;
@@ -160,8 +162,16 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
         completionBlock(NO);
     }
 }
+
 #pragma mark - Touch
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    // 收键盘
+    UIView *firstResSubView = [self findFirstResponderInSelfViewTree];
+    if (firstResSubView) {
+        [firstResSubView resignFirstResponder];
+        return;
+    }
+    // 收起自己
     if (NO == _hideOnTouchOutside) {
         [super touchesBegan:touches withEvent:event];
         return;
@@ -195,26 +205,35 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
 }
 - (void)observeKeyboardNotify {
     [self rmKeyboardNotifyObserver];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reciveKeyboardNotification:) name:UIKeyboardWillChangeFrameNotification object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kb_willShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kb_willHidden:) name:UIKeyboardWillHideNotification object:nil];
 }
 - (void)rmKeyboardNotifyObserver {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
 }
-- (void)reciveKeyboardNotification:(NSNotification *)notify {
+- (void)kb_willShow:(NSNotification *)notify {
+    [self p_reciveKeyboardNotification:notify frWillShow:YES];
+}
+- (void)kb_willHidden:(NSNotification *)notify {
+    [self p_reciveKeyboardNotification:notify frWillShow:NO];
+}
+- (void)p_reciveKeyboardNotification:(NSNotification *)notify frWillShow:(BOOL)willShow {
     if (self.window == nil) {
+        return;
+    }
+    if (![self findFirstResponderInSelfViewTree]) {
         return;
     }
     CGRect kbToRect = [notify.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGFloat animationDuration = [notify.userInfo[UIKeyboardAnimationDurationUserInfoKey] floatValue];
     
-    BOOL kbToShow = CGRectGetMinY(kbToRect) < [UIScreen mainScreen].bounds.size.height;
-    
     CGRect alertRect = [self.layoutStackView convertRect:self.layoutStackView.bounds toView:self.window];
     
     CGFloat offsetY = CGRectGetMaxY(alertRect) - CGRectGetMinY(kbToRect);
     CGAffineTransform transf = CGAffineTransformIdentity;
-    if (kbToShow) {
+    if (willShow) {
         if (offsetY <= 0) {
             return;
         }
@@ -225,7 +244,6 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
         self.layoutStackView.transform = transf;
     }];
 }
-
 
 #pragma mark - Lazy
 - (nullable UIView *)topBarView {
