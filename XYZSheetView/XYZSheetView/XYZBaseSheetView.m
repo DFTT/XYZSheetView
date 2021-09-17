@@ -278,6 +278,9 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
         scrView.bounces = NO;
         scrView.showsHorizontalScrollIndicator = NO;
         scrView.translatesAutoresizingMaskIntoConstraints = NO;
+        if (@available(iOS 11.0, *)) {
+            scrView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        }
         _centerScrollView = scrView;
     }
     return _centerScrollView;
