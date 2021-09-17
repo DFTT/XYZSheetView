@@ -64,8 +64,6 @@
         _actions    = [NSMutableArray array];
         
         self.allowScrollIfOutMaxHeight = NO;
-        
-        [self addSubview:self.tableView];
     }
     return self;
 }
