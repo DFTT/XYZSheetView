@@ -92,6 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
+/// 提供了底部取消按钮区域
 @interface XYZCommonSheetView : XYZBaseSheetView
 
 /// 底部按钮

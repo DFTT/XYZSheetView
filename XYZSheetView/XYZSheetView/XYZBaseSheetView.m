@@ -22,8 +22,9 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
 {
     NSLayoutConstraint *_beforConst;
     NSLayoutConstraint *_afterConst;
+    CAShapeLayer *_maskLayer;
 }
-@property(nonatomic, strong) UIStackView *layoutStackView;
+@property(nonatomic, strong) UIView *bgContentView;
 @property(nonatomic, strong) UIScrollView *centerScrollView;
 @end
 
@@ -38,6 +39,8 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
         _backAlpha    = 0.3;
         _showDuration = 0.2;
         _hideDuration = 0.2;
+
+        _bgContentView = [[UIView alloc] init];
         
         self.autoAvoidKeyboard = YES;
     }
@@ -77,6 +80,17 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
         }
     }
     
+    // stackView
+    UIStackView *stackView = [[UIStackView alloc] init];
+    stackView.axis = UILayoutConstraintAxisVertical;
+    stackView.distribution = UIStackViewDistributionEqualSpacing;
+    [self.bgContentView addSubview:stackView];
+    stackView.translatesAutoresizingMaskIntoConstraints = NO;
+    [stackView.leftAnchor constraintEqualToAnchor:self.bgContentView.leftAnchor].active = YES;
+    [stackView.rightAnchor constraintEqualToAnchor:self.bgContentView.rightAnchor].active = YES;
+    [stackView.topAnchor constraintEqualToAnchor:self.bgContentView.topAnchor].active = YES;
+    [stackView.bottomAnchor constraintEqualToAnchor:self.bgContentView.bottomAnchor].active = YES;
+    
     // topview bottomView
     UIView *topView  = [self topBarView];
     UIView *bottView = [self bottomBarView];
@@ -84,25 +98,26 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
     if (topView) {
         [topView setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
         [topView setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
-        [self.layoutStackView addArrangedSubview:topView];
+        [stackView addArrangedSubview:topView];
     }
     // 优先被压缩
     [self.centerScrollView setContentCompressionResistancePriority:NSURLSessionTaskPriorityLow forAxis:UILayoutConstraintAxisVertical];
-    [self.layoutStackView addArrangedSubview:self.centerScrollView];
+    [stackView addArrangedSubview:self.centerScrollView];
     if (bottView) {
         [bottView setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
         [bottView setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
-        [self.layoutStackView addArrangedSubview:bottView];
+        [stackView addArrangedSubview:bottView];
     }
     
     // 添加stackView 左右约束定宽 高度自撑大(限制最大高度)
-    [self addSubview:self.layoutStackView];
-    [self.layoutStackView.leftAnchor constraintEqualToAnchor:self.leftAnchor constant:0].active = YES;
-    [self.layoutStackView.rightAnchor constraintEqualToAnchor:self.rightAnchor constant:0].active = YES;
+    [self addSubview:self.bgContentView];
+    self.bgContentView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.bgContentView.leftAnchor constraintEqualToAnchor:self.leftAnchor constant:0].active = YES;
+    [self.bgContentView.rightAnchor constraintEqualToAnchor:self.rightAnchor constant:0].active = YES;
     // maxHeigthCons
-    [self.layoutStackView.heightAnchor constraintLessThanOrEqualToAnchor:self.heightAnchor multiplier:self.maxHeightScale].active = YES;
-    _beforConst = [self.layoutStackView.topAnchor constraintEqualToAnchor:self.bottomAnchor constant:0];
-    _afterConst = [self.layoutStackView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:0];
+    [self.bgContentView.heightAnchor constraintLessThanOrEqualToAnchor:self.heightAnchor multiplier:self.maxHeightScale].active = YES;
+    _beforConst = [self.bgContentView.topAnchor constraintEqualToAnchor:self.bottomAnchor constant:0];
+    _afterConst = [self.bgContentView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:0];
 
     
     // add self to superView
@@ -177,19 +192,23 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
         return;
     }
     CGPoint point = [touches.anyObject locationInView:self];
-    if (!CGRectContainsPoint(self.layoutStackView.frame, point)) {
+    if (!CGRectContainsPoint(self.bgContentView.frame, point)) {
         [self hideWithAnimation:YES];
     }
 }
 
 - (void)layoutSubviews {
-    if (_topCornerRadius > 0 && NO == CGRectIsEmpty(_layoutStackView.frame) && _layoutStackView.layer.mask == nil) {
-        
+    [super layoutSubviews];
+    
+    BOOL maskNot = (_topCornerRadius > 0 && !CGRectIsEmpty(_bgContentView.frame) && !_maskLayer);
+    BOOL maskNeedUpdate = (_maskLayer && !CGRectEqualToRect(_maskLayer.frame, _bgContentView.bounds));
+    if (maskNot || maskNeedUpdate) {
         CAShapeLayer *mask = [CAShapeLayer layer];
-        mask.frame         = _layoutStackView.bounds;
+        mask.frame         = _bgContentView.bounds;
         UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:mask.bounds byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight  cornerRadii:CGSizeMake(_topCornerRadius, _topCornerRadius)];
         mask.path = path.CGPath;
-        _layoutStackView.layer.mask = mask;
+        
+        _bgContentView.layer.mask = _maskLayer = mask;
     }
 }
 #pragma mark - avoidKeyBoard
@@ -229,7 +248,7 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
     CGRect kbToRect = [notify.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGFloat animationDuration = [notify.userInfo[UIKeyboardAnimationDurationUserInfoKey] floatValue];
     
-    CGRect alertRect = [self.layoutStackView convertRect:self.layoutStackView.bounds toView:self.window];
+    CGRect alertRect = [self.bgContentView convertRect:self.bgContentView.bounds toView:self.window];
     
     CGFloat offsetY = CGRectGetMaxY(alertRect) - CGRectGetMinY(kbToRect);
     CGAffineTransform transf = CGAffineTransformIdentity;
@@ -241,7 +260,7 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
     }
     
     [UIView animateWithDuration:animationDuration > 0 ? animationDuration : 0.2 animations:^{
-        self.layoutStackView.transform = transf;
+        self.bgContentView.transform = transf;
     }];
 }
 
@@ -260,18 +279,7 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
 }
 
 #pragma mark - Get
-- (UIStackView *)layoutStackView {
-    if (!_layoutStackView) {
-        UIStackView *stack = [[UIStackView alloc] init];
-        stack.axis = UILayoutConstraintAxisVertical;
-        stack.distribution = UIStackViewDistributionEqualSpacing;
-        stack.translatesAutoresizingMaskIntoConstraints = NO;
-        [self addSubview:stack];
-        
-        _layoutStackView = stack;
-    }
-    return _layoutStackView;
-}
+
 - (UIScrollView *)centerScrollView {
     if (!_centerScrollView) {
         UIScrollView *scrView = [[UIScrollView alloc] init];
