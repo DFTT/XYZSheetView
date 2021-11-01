@@ -1,13 +1,13 @@
 //
-//  UIView+XYZFindFirstResponder.m
+//  UIView+XYZSheetView.m
 //  XYZSheetView
 //
 //  Created by 大大东 on 2021/9/10.
 //
 
-#import "UIView+XYZFindFirstResponder.h"
+#import "UIView+XYZSheetView.h"
 
-@implementation UIView (XYZFindFirstResponder)
+@implementation UIView (XYZSheetView)
 
 - (UIView *)findFirstResponderInSelfViewTree {
     if (self.isFirstResponder) {

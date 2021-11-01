@@ -6,7 +6,7 @@
 //
 
 #import "XYZBaseSheetView.h"
-#import "UIView+XYZFindFirstResponder.h"
+#import "UIView+XYZSheetView.h"
 
 
 inline CGFloat XYZSafeAreaBottomHeight(void) {

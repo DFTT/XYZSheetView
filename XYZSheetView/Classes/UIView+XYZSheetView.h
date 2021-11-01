@@ -1,5 +1,5 @@
 //
-//  UIView+XYZFindFirstResponder.h
+//  UIView+XYZSheetView.h
 //  XYZSheetView
 //
 //  Created by 大大东 on 2021/9/10.
@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UIView (XYZFindFirstResponder)
+@interface UIView (XYZSheetView)
 
 /// 从自身开始深度遍历寻找为第一响应者的子视图
 - (nullable UIView *)findFirstResponderInSelfViewTree;
