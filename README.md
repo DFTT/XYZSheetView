@@ -32,6 +32,7 @@
 /// 必须实现(要求: 竖直方向上约束完备<自撑大 或 有高度约束>
 ///              如果是滚动视图 请注意滚动冲突 可以设置 allowScrollIfOutMaxHeight = NO)
 - (nonnull  UIView *)centerContentView;
+```
 
 ##### 安装：
 - 源码安装: 拖拽XYZSheetView/Classes文件夹到项目中即可
