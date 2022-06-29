@@ -8,6 +8,55 @@
 #import "XYZBaseSheetView.h"
 #import "UIView+XYZSheetView.h"
 
+@interface BlurEffectView : UIView
+- (instancetype)initWithStyle:(XYZSheetViewBgBlurStyle)style level:(int)level;
+@end
+@implementation BlurEffectView
+{
+    UIVisualEffectView *_effectBgView;
+    XYZSheetViewBgBlurStyle _style;
+    int _level;
+}
+- (instancetype)initWithStyle:(XYZSheetViewBgBlurStyle)style level:(int)level {
+    if (self = [super init]) {
+        _level = level;
+        _style = style;
+        [self p_setupEffectBgView];
+    }
+    return self;
+}
+- (void)layoutSubviews {
+    _effectBgView.frame = self.bounds;
+    [super layoutSubviews];
+}
+- (void)p_setupEffectBgView {
+    UIBlurEffectStyle stype = -1;
+    switch (_style) {
+        case XYZSheetViewBgBlurStyleDark:
+            stype = UIBlurEffectStyleDark;
+            break;
+        case XYZSheetViewBgBlurStyleLight:
+            stype = UIBlurEffectStyleLight;
+            break;
+        case XYZSheetViewBgBlurStyleExtraLight:
+            stype = UIBlurEffectStyleExtraLight;
+            break;
+        default:
+            break;
+    }
+    if (stype == -1) {
+        return ;
+    }
+    UIVisualEffectView *view = [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:stype]];
+    [self insertSubview:view atIndex:0];
+    // scale = (0 , 100), 越小越清晰
+    CGFloat scale = MAX(1, MIN(_level, 100)) / 100.0;
+    view.transform = CGAffineTransformMakeScale(scale, scale);
+    
+    _effectBgView = view;
+}
+@end
+
 
 inline CGFloat XYZSafeAreaBottomHeight(void) {
     CGFloat bottom = 0;
@@ -23,6 +72,8 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
     NSLayoutConstraint *_beforConst;
     NSLayoutConstraint *_afterConst;
     CAShapeLayer *_maskLayer;
+    
+    BlurEffectView *_effectBgView;
 }
 @property(nonatomic, strong) UIView *bgContentView;
 @property(nonatomic, strong) UIScrollView *centerScrollView;
@@ -36,10 +87,11 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
         _hideOnTouchOutside        = YES;
         _allowScrollIfOutMaxHeight = YES;
         _maxHeightScale = 0.7;
-        _backAlpha    = 0.3;
+        _bgViewColor    = [[UIColor blackColor] colorWithAlphaComponent:0.3];
+        _bgViewBlurLevel = 100;
         _showDuration = 0.2;
         _hideDuration = 0.2;
-
+        
         _bgContentView = [[UIView alloc] init];
         
         self.autoAvoidKeyboard = YES;
@@ -61,6 +113,7 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
         NSAssert(NO, @"centerContentView must not nil");
         return;
     }
+    
     // centerView
     [self.centerScrollView addSubview:centView];
     centView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -118,7 +171,7 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
     [self.bgContentView.heightAnchor constraintLessThanOrEqualToAnchor:self.heightAnchor multiplier:self.maxHeightScale].active = YES;
     _beforConst = [self.bgContentView.topAnchor constraintEqualToAnchor:self.bottomAnchor constant:0];
     _afterConst = [self.bgContentView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:0];
-
+    
     
     // add self to superView
     [view addSubview:self];
@@ -130,6 +183,7 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
     
     // befor animation
     self.backgroundColor = [UIColor clearColor];
+    UIView *blurView = [self p_tryAddEffectBgView];
     _beforConst.active = YES;
     _afterConst.active = NO;
     [self layoutIfNeeded];
@@ -141,7 +195,10 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
                           delay:0
                         options:UIViewAnimationOptionCurveEaseIn
                      animations:^{
-        self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:self.backAlpha];
+        
+        if (blurView == nil) {
+            self.backgroundColor = self->_bgViewColor;
+        }
         [self layoutIfNeeded];
     }
                      completion:nil];
@@ -157,10 +214,14 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
 
 - (void)hideWithAnimation:(BOOL)animation {
     if (!self.superview) return;
-
+    
+    
     void(^animationsBlock)(void) = ^{
         [self layoutIfNeeded];
         self.backgroundColor = [UIColor clearColor];
+        if (self->_effectBgView) {
+            [self->_effectBgView removeFromSuperview];
+        }
     };
     void(^completionBlock)(BOOL n) = ^(BOOL n){
         [self removeFromSuperview];
@@ -211,6 +272,25 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
         _bgContentView.layer.mask = _maskLayer = mask;
     }
 }
+#pragma mark - blurBg
+- (nullable BlurEffectView *)p_tryAddEffectBgView {
+    if (_bgViewBlurStyle == XYZSheetViewBgBlurStyleNone) {
+        return nil;
+    }
+    [_effectBgView removeFromSuperview];
+    _effectBgView = nil;
+    
+    BlurEffectView *view = [[BlurEffectView alloc] initWithStyle:_bgViewBlurStyle level:_bgViewBlurLevel];
+    view.translatesAutoresizingMaskIntoConstraints = NO;
+    [self insertSubview:view atIndex:0];
+    [view.topAnchor constraintEqualToAnchor:self.topAnchor].active = YES;
+    [view.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = YES;
+    [view.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = YES;
+    [view.bottomAnchor constraintEqualToAnchor:self.bottomAnchor].active = YES;
+    
+    return _effectBgView = view;
+}
+
 #pragma mark - avoidKeyBoard
 - (void)setAutoAvoidKeyboard:(BOOL)autoAvoidKeyboard {
     if (_autoAvoidKeyboard != autoAvoidKeyboard) {
@@ -224,7 +304,7 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
 }
 - (void)observeKeyboardNotify {
     [self rmKeyboardNotifyObserver];
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kb_willShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kb_willHidden:) name:UIKeyboardWillHideNotification object:nil];
 }
@@ -342,7 +422,7 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
     [cancelbtn.heightAnchor constraintEqualToConstant:49].active = YES;
     CGFloat bCons = -(XYZSafeAreaBottomHeight());
     [cancelbtn.bottomAnchor constraintEqualToAnchor:view.bottomAnchor constant:bCons].active = YES;
-        
+    
     view.backgroundColor = self.cancelBtn.backgroundColor;
     return view;
 }

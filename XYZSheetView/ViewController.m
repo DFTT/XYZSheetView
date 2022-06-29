@@ -36,6 +36,11 @@
     [self.view  addSubview:btn3];
     [btn3 addTarget:self action:@selector(btn3Action) forControlEvents:UIControlEventTouchUpInside];
     btn3.frame = CGRectMake(0, 200 + 40 * 2, self.view.bounds.size.width, 30);
+    
+    
+    UIView *blueView = [[UIView alloc] initWithFrame:CGRectMake(0, 50, 200, 20)];
+    blueView.backgroundColor = UIColor.systemBlueColor;
+    [self.view addSubview:blueView];
 }
 
 - (void)btnAction {
@@ -48,7 +53,9 @@
     XYZListSheet *s = [[XYZListSheet alloc] init];
     s.actions = arr;
     s.topCornerRadius = 16;
-
+    s.bgViewBlurStyle = XYZSheetViewBgBlurStyleLight;
+    s.bgViewBlurLevel = 1;
+    
     [s showToView:self.view];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         for (int i = 0; i < 30; i++) {
@@ -64,6 +71,7 @@
 - (void)btn2Action {
     SimpleSheet *sheet = [[SimpleSheet alloc] init];
     sheet.tHeight = 200;
+    sheet.bgViewBlurStyle = XYZSheetViewBgBlurStyleLight;
     [sheet showToView:self.view];
 }
 

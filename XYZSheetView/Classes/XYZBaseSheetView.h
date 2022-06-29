@@ -9,6 +9,13 @@
 
 FOUNDATION_EXTERN CGFloat XYZSafeAreaBottomHeight(void);
 
+typedef NS_ENUM(NSUInteger, XYZSheetViewBgBlurStyle) {
+    XYZSheetViewBgBlurStyleNone,
+    XYZSheetViewBgBlurStyleExtraLight,
+    XYZSheetViewBgBlurStyleLight,
+    XYZSheetViewBgBlurStyleDark,
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface XYZBaseSheetView : UIView
@@ -17,9 +24,17 @@ NS_ASSUME_NONNULL_BEGIN
 /// defult YES
 @property (nonatomic, assign) BOOL hideOnTouchOutside;
 
-/// 背景透明度
-/// defult 0.3
-@property (nonatomic, assign) CGFloat backAlpha;
+/// 背景色
+/// defult [[UIColor blackColor] colorWithAlphaComponent:0.3]
+@property (nonatomic, strong) UIColor *bgViewColor;
+
+/// 背景模糊 (如果设置了模糊背景, bgViewColor将会失效)
+/// defult XYZSheetViewBgBlurStyleNone
+@property (nonatomic, assign) XYZSheetViewBgBlurStyle bgViewBlurStyle;
+
+/// 背景模糊程度 ( 0 < level < 100, 数值越小, 模糊程度越低, 即越清晰)
+/// defult 100 即系统UIBlurEffect默认程度
+@property (nonatomic, assign) int bgViewBlurLevel;
 
 /// 展示最大高度与容器高度的比例
 /// defult 0.7
@@ -42,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSTimeInterval hideDuration;
 
 
-/// 自动躲避键盘 (键盘弹出时 自动往上便宜键盘的高度)
+/// 自动躲避键盘 (键盘弹出时 自动往上偏移键盘的高度)
 /// defult YES
 @property (nonatomic, assign) BOOL autoAvoidKeyboard;
 
