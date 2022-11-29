@@ -115,14 +115,6 @@
     return self.cellHeight;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    return CGFLOAT_MIN;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    return CGFLOAT_MIN;
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     XYZSheetCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(XYZSheetCell.class)];
 
@@ -145,7 +137,7 @@
 
 - (UITableView *)tableView {
     if (!_tableView) {
-        _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+        _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
         _tableView.delegate = self;
         _tableView.dataSource = self;
         _tableView.estimatedRowHeight = 0;
@@ -154,9 +146,15 @@
         _tableView.backgroundColor = [UIColor whiteColor];
         _tableView.alwaysBounceVertical = NO;
         _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        _tableView.sectionFooterHeight = _tableView.sectionHeaderHeight = 0;
+        
         if (@available(iOS 11.0, *)) {
             _tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         }
+        if (@available(iOS 15.0, *)) {
+            _tableView.sectionHeaderTopPadding = 0;
+        }
+        
         _tableView.tableFooterView = [[UIView alloc] init];
         [_tableView registerClass:XYZSheetCell.class forCellReuseIdentifier:NSStringFromClass(XYZSheetCell.class)];
     }

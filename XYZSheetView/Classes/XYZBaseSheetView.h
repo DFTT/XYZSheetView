@@ -56,6 +56,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// defult 0.2
 @property (nonatomic, assign) NSTimeInterval hideDuration;
 
+/// 显示动画结束后的回调
+@property (nonatomic, copy, nullable) dispatch_block_t showCompletionBlock;
+
+/// 隐藏动画结束后的回调
+@property (nonatomic, copy, nullable) dispatch_block_t hideCompletionBlock;
 
 /// 自动躲避键盘 (键盘弹出时 自动往上偏移键盘的高度)
 /// defult YES
@@ -65,6 +70,14 @@ NS_ASSUME_NONNULL_BEGIN
 /// 键盘弹出时 默认自动往上偏移键盘的高度 此值为负数时 会增加向上偏移的距离, 此值为正数时 会减小向上偏移的距离
 /// defult 0
 @property (nonatomic, assign) CGFloat avoidKeyboardOffsetY;
+
+
+/// 容器view (便于在添加其它子视图时 编写布局约束)
+@property (nonatomic, strong, readonly) UIView *contentContainerView;
+
+/// 额外添加在SheetView上的子视图(contentContainerView区域外的), 需要通过此方法注册才可以响应点击的事件 (可注册多个子视图)
+- (void)registExtraClickAbleSubView:(UIView *)subView;
+
 
 
 /**
@@ -107,7 +120,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
-/// 提供了底部取消按钮区域
+//*****************************   提供了底部取消按钮区域(bottomBarView)  ****************************/
+
+/// 提供了底部取消按钮区域(bottomBarView)
 @interface XYZCommonSheetView : XYZBaseSheetView
 
 /// 底部按钮

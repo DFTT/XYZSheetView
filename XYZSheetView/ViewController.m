@@ -53,8 +53,8 @@
     XYZListSheet *s = [[XYZListSheet alloc] init];
     s.actions = arr;
     s.topCornerRadius = 16;
-    s.bgViewBlurStyle = XYZSheetViewBgBlurStyleLight;
-    s.bgViewBlurLevel = 1;
+    s.bgViewBlurStyle = XYZSheetViewBgBlurStyleDark;
+    s.bgViewBlurLevel = 50;
     
     [s showToView:self.view];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -73,6 +73,19 @@
     sheet.tHeight = 200;
     sheet.bgViewBlurStyle = XYZSheetViewBgBlurStyleLight;
     [sheet showToView:self.view];
+    
+    UILabel *ext = [[UILabel alloc] initWithFrame:CGRectMake(100, 200, 200, 70)];
+    ext.text = @"额外添加的子视图";
+    ext.backgroundColor = UIColor.orangeColor;
+    ext.userInteractionEnabled = YES;
+    [sheet addSubview:ext];
+    
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tmpAction)];
+    [ext addGestureRecognizer:tap];
+    [sheet registExtraClickAbleSubView:ext];
+}
+- (void)tmpAction {
+    NSLog(@"tap tap");
 }
 
 - (void)btn3Action {

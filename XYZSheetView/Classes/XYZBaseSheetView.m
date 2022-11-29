@@ -74,6 +74,8 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
     CAShapeLayer *_maskLayer;
     
     BlurEffectView *_effectBgView;
+    
+    NSHashTable *_extraSubVies;
 }
 @property(nonatomic, strong) UIView *bgContentView;
 @property(nonatomic, strong) UIScrollView *centerScrollView;
@@ -201,7 +203,9 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
         }
         [self layoutIfNeeded];
     }
-                     completion:nil];
+                     completion:^(BOOL finished) {
+        if (self.showCompletionBlock) {self.showCompletionBlock();}
+    }];
 }
 
 //- (void)refreshSheetHegit {
@@ -225,6 +229,7 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
     };
     void(^completionBlock)(BOOL n) = ^(BOOL n){
         [self removeFromSuperview];
+        if (self.hideCompletionBlock) {self.hideCompletionBlock();}
     };
     if (animation) {
         _afterConst.active = NO;
@@ -239,6 +244,17 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
     }
 }
 
+- (UIView *)contentContainerView {
+    return  _bgContentView;
+}
+
+- (void)registExtraClickAbleSubView:(UIView *)subView {
+    if (subView == nil) {return;}
+    if (!_extraSubVies) {_extraSubVies = [NSHashTable weakObjectsHashTable];}
+    if ([_extraSubVies containsObject:subView]) {return;}
+    [_extraSubVies addObject:subView];
+}
+
 #pragma mark - Touch
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // 收键盘
@@ -247,14 +263,23 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
         [firstResSubView resignFirstResponder];
         return;
     }
+    
     // 收起自己
     if (NO == _hideOnTouchOutside) {
         [super touchesBegan:touches withEvent:event];
         return;
     }
+    
     CGPoint point = [touches.anyObject locationInView:self];
-    if (!CGRectContainsPoint(self.bgContentView.frame, point)) {
+    BOOL outsideContentBG = !CGRectContainsPoint(self.bgContentView.frame, point);
+    BOOL outsideExtraSubview = YES;
+    for (UIView *exsubview in _extraSubVies) {
+        outsideExtraSubview &= !CGRectContainsPoint(exsubview.frame, point);
+    }
+    if (outsideContentBG && outsideExtraSubview) {
         [self hideWithAnimation:YES];
+    }else {
+        [super touchesBegan:touches withEvent:event];
     }
 }
 
