@@ -22,39 +22,39 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 点击空白区域时自动隐藏
 /// defult YES
-@property (nonatomic, assign) BOOL hideOnTouchOutside;
+@property (nonatomic, assign) BOOL hideOnTouchOutside UI_APPEARANCE_SELECTOR;
 
 /// 背景色
 /// defult [[UIColor blackColor] colorWithAlphaComponent:0.3]
-@property (nonatomic, strong) UIColor *bgViewColor;
+@property (nonatomic, strong) UIColor *bgViewColor UI_APPEARANCE_SELECTOR;
 
 /// 背景模糊 (如果设置了模糊背景, bgViewColor将会失效)
 /// defult XYZSheetViewBgBlurStyleNone
-@property (nonatomic, assign) XYZSheetViewBgBlurStyle bgViewBlurStyle;
+@property (nonatomic, assign) XYZSheetViewBgBlurStyle bgViewBlurStyle UI_APPEARANCE_SELECTOR;
 
 /// 背景模糊程度 ( 0 < level < 100, 数值越小, 模糊程度越低, 即越清晰)
 /// defult 100 即系统UIBlurEffect默认程度
-@property (nonatomic, assign) int bgViewBlurLevel;
+@property (nonatomic, assign) int bgViewBlurLevel UI_APPEARANCE_SELECTOR;
 
 /// 展示最大高度与容器高度的比例
 /// defult 0.7
-@property (nonatomic, assign) CGFloat maxHeightScale;
+@property (nonatomic, assign) CGFloat maxHeightScale UI_APPEARANCE_SELECTOR;
 
 /// 当内容高度超出maxHeightScale标记的高度时, 是否允许sheetView滚动
 /// defult YES
-@property (nonatomic, assign) BOOL allowScrollIfOutMaxHeight;
+@property (nonatomic, assign) BOOL allowScrollIfOutMaxHeight UI_APPEARANCE_SELECTOR;
 
 /// 切圆角的半径(TopLeft & TopRight) >0才显示
 /// defult 0
-@property (nonatomic, assign) CGFloat topCornerRadius;
+@property (nonatomic, assign) CGFloat topCornerRadius UI_APPEARANCE_SELECTOR;
 
 /// 显示动画持续时间
 /// defult 0.2
-@property (nonatomic, assign) NSTimeInterval showDuration;
+@property (nonatomic, assign) NSTimeInterval showDuration UI_APPEARANCE_SELECTOR;
 
 /// 隐藏动画持续时间
 /// defult 0.2
-@property (nonatomic, assign) NSTimeInterval hideDuration;
+@property (nonatomic, assign) NSTimeInterval hideDuration UI_APPEARANCE_SELECTOR;
 
 /// 显示动画结束后的回调
 @property (nonatomic, copy, nullable) dispatch_block_t showCompletionBlock;
