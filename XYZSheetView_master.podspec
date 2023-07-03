@@ -22,7 +22,7 @@ Pod::Spec.new do |s|
   s.author           = { 'XYZSheetView' => 'lidong@021.com' }
   s.source           = { :git => 'https://github.com/DFTT/XYZSheetView.git', :branch => 'main' }
   
-  s.ios.deployment_target = '9.0'
+  s.ios.deployment_target = '10.0'
   s.frameworks      = 'Foundation', 'UIKit'
 
   # s.user_target_xcconfig =  {'OTHER_LDFLAGS' => ['-lObjC']}

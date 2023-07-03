@@ -11,17 +11,27 @@
 @interface BlurEffectView : UIView
 - (instancetype)initWithStyle:(XYZSheetViewBgBlurStyle)style level:(int)level;
 @end
+
 @implementation BlurEffectView
 {
     UIVisualEffectView *_effectBgView;
     XYZSheetViewBgBlurStyle _style;
+    UIViewPropertyAnimator *_animator;
     int _level;
 }
 - (instancetype)initWithStyle:(XYZSheetViewBgBlurStyle)style level:(int)level {
     if (self = [super init]) {
-        _level = level;
+        _level = MAX(1, MIN(level, 100));
         _style = style;
-        [self p_setupEffectBgView];
+        
+        UIVisualEffectView *view = [[UIVisualEffectView alloc] init];
+        [self insertSubview:view atIndex:0];
+        _effectBgView = view;
+        
+        [self p_resetEffect];
+        
+        // 进入后台后 动画自动失败 模糊效果会复原 这里监听重新设置
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(p_resetEffect) name:UIApplicationWillEnterForegroundNotification object:nil];
     }
     return self;
 }
@@ -29,7 +39,11 @@
     _effectBgView.frame = self.bounds;
     [super layoutSubviews];
 }
-- (void)p_setupEffectBgView {
+
+- (void)p_resetEffect {
+    if (_animator.state == UIViewAnimatingStateActive) {
+        return;
+    }
     UIBlurEffectStyle stype = -1;
     switch (_style) {
         case XYZSheetViewBgBlurStyleDark:
@@ -47,13 +61,16 @@
     if (stype == -1) {
         return ;
     }
-    UIVisualEffectView *view = [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:stype]];
-    [self insertSubview:view atIndex:0];
-    // scale = (0 , 100), 越小越清晰
-    CGFloat scale = MAX(1, MIN(_level, 100)) / 100.0;
-    view.transform = CGAffineTransformMakeScale(scale, scale);
-    
-    _effectBgView = view;
+    _effectBgView.effect = nil;
+    __weak typeof(self) weakself = self;
+    _animator = [[UIViewPropertyAnimator alloc] initWithDuration:0 curve:UIViewAnimationCurveLinear animations:^{
+        __strong typeof(weakself) strongself = weakself;
+        if (strongself == nil) {
+            return;
+        }
+        strongself->_effectBgView.effect = [UIBlurEffect effectWithStyle:stype];
+    }];
+    _animator.fractionComplete = _level / 100.0;
 }
 @end
 
