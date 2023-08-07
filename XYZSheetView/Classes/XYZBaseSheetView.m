@@ -30,8 +30,6 @@
         
         [self p_resetEffect];
         
-        // 进入后台后 动画自动失败 模糊效果会复原 这里监听重新设置
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(p_resetEffect) name:UIApplicationWillEnterForegroundNotification object:nil];
     }
     return self;
 }
@@ -41,6 +39,7 @@
 }
 
 - (void)p_resetEffect {
+    
     if (_animator.state == UIViewAnimatingStateActive) {
         return;
     }
@@ -71,6 +70,13 @@
         strongself->_effectBgView.effect = [UIBlurEffect effectWithStyle:stype];
     }];
     _animator.fractionComplete = _level / 100.0;
+    if (@available(iOS 11.0, *)) {
+        _animator.pausesOnCompletion = YES;
+    }else {
+        // 进入后台后 动画自动失败 模糊效果会复原 这里监听重新设置
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(p_resetEffect) name:UIApplicationWillEnterForegroundNotification object:nil];
+    }
 }
 @end
 
