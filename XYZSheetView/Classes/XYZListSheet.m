@@ -9,9 +9,26 @@
 #import "XYZListSheet.h"
 
 @implementation XYZListSheetAction
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _nameFont = [UIFont systemFontOfSize:16];
+        _nameFontColor = [UIColor blackColor];
+        
+        _descFont = [UIFont systemFontOfSize:13];
+        _descFontColor = [UIColor grayColor];
+    }
+    return self;
+}
 + (instancetype)actionWithName:(NSString *)name action:(XYZListSheetActionBlock)action {
+    return [self actionWithName:name desc:nil action:action];
+}
++ (instancetype)actionWithName:(NSString *)name
+                          desc:(NSString * _Nullable)desc
+                        action:(XYZListSheetActionBlock _Nullable)action {
     XYZListSheetAction *sheetAction = [XYZListSheetAction new];
-    sheetAction.name   = name;
+    sheetAction.name = name;
+    sheetAction.desc = desc;
     sheetAction.action = action;
     return sheetAction;
 }
@@ -21,30 +38,44 @@
 
 @interface XYZSheetCell : UITableViewCell
 @property (nonatomic, strong) UILabel *titleLabel;
+@property (nonatomic, strong) UILabel *descLabel;
 @property (nonatomic, strong) CALayer *line;
 @end
 @implementation XYZSheetCell
+{
+    UIStackView *_stackView;
+}
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         self.selectionStyle = UITableViewCellSelectionStyleNone;
-        _titleLabel = [UILabel new];
-        _titleLabel.textColor = [UIColor blackColor];
-        _titleLabel.font = [UIFont systemFontOfSize:16];
+        _titleLabel = [[UILabel alloc] init];
         _titleLabel.textAlignment = NSTextAlignmentCenter;
+        
+        _descLabel = [[UILabel alloc] init];
+        _descLabel.textAlignment = NSTextAlignmentCenter;
+        _descLabel.numberOfLines = 3;
+        
         _line = [CALayer new];
         _line.backgroundColor = [UIColor lightGrayColor].CGColor;
-        [self.contentView addSubview:_titleLabel];
+        
+        UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:@[_titleLabel, _descLabel]];
+        stack.axis = UILayoutConstraintAxisVertical;
+        stack.spacing = 0;
+        stack.distribution = UIStackViewDistributionFillProportionally;
+        _stackView = stack;
+        [self.contentView addSubview:stack];
         [self.contentView.layer addSublayer:_line];
     }
     return self;
 }
 - (void)layoutSubviews {
     [super layoutSubviews];
+    
     CGFloat width = self.contentView.bounds.size.width, height = self.contentView.bounds.size.height;
     CGFloat lineHeight = 1.0 / [UIScreen mainScreen].scale;
     _line.frame = CGRectMake(0, height - lineHeight, width, lineHeight);
     CGFloat offset = 15;
-    _titleLabel.frame = CGRectMake(offset, 0, width - offset * 2, height);
+    _stackView.frame = CGRectMake(offset, 2, width - offset * 2, height - 4);
 }
 @end
 
@@ -119,7 +150,20 @@
     XYZSheetCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(XYZSheetCell.class)];
 
     XYZListSheetAction *action = self.actions[indexPath.row];
+    
     cell.titleLabel.text = action.name;
+    cell.titleLabel.font = action.nameFont;
+    cell.titleLabel.textColor = action.nameFontColor;
+    
+    if (action.desc == nil) {
+        cell.descLabel.hidden = YES;
+    }else {
+        cell.descLabel.text = action.desc;
+        cell.descLabel.font = action.descFont;
+        cell.descLabel.textColor = action.descFontColor;
+        cell.descLabel.hidden = NO;
+    }
+
     cell.line.hidden = indexPath.row == self.actions.count - 1;
     return cell;
 }

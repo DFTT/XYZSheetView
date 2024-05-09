@@ -49,7 +49,7 @@
         XYZListSheetAction *action = [XYZListSheetAction actionWithName:@"哈哈哈哈" action:nil];
         [arr addObject:action];
     }
-
+    
     XYZListSheet *s = [[XYZListSheet alloc] init];
     s.actions = arr;
     s.topCornerRadius = 16;
@@ -59,8 +59,15 @@
     [s showToView:self.view];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         for (int i = 0; i < 30; i++) {
-            XYZListSheetAction *action = [XYZListSheetAction actionWithName:@"哈哈哈哈" action:nil];
-            [arr addObject:action];
+            if (arc4random() % 2 == 1) {
+                
+                XYZListSheetAction *action = [XYZListSheetAction actionWithName:@"哈哈哈哈" action:nil];
+                [arr addObject:action];
+            }else {
+                
+                XYZListSheetAction *action = [XYZListSheetAction actionWithName:@"哈哈哈哈" desc:@"大王大王" action:nil];
+                [arr addObject:action];
+            }
         }
         s.actions = arr;
         [s refreshOprations];
