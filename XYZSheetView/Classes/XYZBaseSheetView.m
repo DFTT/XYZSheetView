@@ -376,9 +376,8 @@ inline CGFloat XYZSafeAreaBottomHeight(void) {
     CGRect kbToRect = [notify.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGFloat animationDuration = [notify.userInfo[UIKeyboardAnimationDurationUserInfoKey] floatValue];
     
-    CGRect alertRect = [self.bgContentView convertRect:self.bgContentView.bounds toView:self.window];
+    CGFloat offsetY = CGRectGetHeight(kbToRect);
     
-    CGFloat offsetY = CGRectGetMaxY(alertRect) - CGRectGetMinY(kbToRect);
     CGAffineTransform transf = CGAffineTransformIdentity;
     if (willShow) {
         if (offsetY <= 0) {
