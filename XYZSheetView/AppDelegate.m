@@ -6,7 +6,6 @@
 //
 
 #import "AppDelegate.h"
-#import "ViewController.h"
 
 @interface AppDelegate ()
 
@@ -16,15 +15,7 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
-    
-    
-    
-    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:[ViewController new]];
-    self.window.hidden = NO;
-    [self.window makeKeyAndVisible];
-    
+    // 窗口由 SceneDelegate 创建 (iOS 26+ SDK 要求 App 使用 Scene 生命周期)
     return YES;
 }
 

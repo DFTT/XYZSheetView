@@ -16,6 +16,12 @@ typedef NS_ENUM(NSUInteger, XYZSheetViewBgBlurStyle) {
     XYZSheetViewBgBlurStyleDark,
 };
 
+typedef NS_ENUM(NSUInteger, XYZSheetViewHorizontalAlignment) {
+    XYZSheetViewHorizontalAlignmentCenter = 0,
+    XYZSheetViewHorizontalAlignmentLeft,
+    XYZSheetViewHorizontalAlignmentRight,
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface XYZBaseSheetView : UIView
@@ -40,6 +46,16 @@ NS_ASSUME_NONNULL_BEGIN
 /// defult 0.7
 @property (nonatomic, assign) CGFloat maxHeightScale UI_APPEARANCE_SELECTOR;
 
+/// 最大宽度 (<=0 表示不限制, 保持全宽)
+/// 仅横向 size class 为 regular 时生效 (iPad / iPhone Duo 展开等), compact 下保持全宽。
+/// 生效时宽度取 maxWidth 与安全区宽度的较小值
+/// defult 0
+@property (nonatomic, assign) CGFloat maxWidth UI_APPEARANCE_SELECTOR;
+
+/// maxWidth 在横向 regular 下生效时的水平对齐; Left/Right 按布局方向(leading/trailing)处理
+/// defult XYZSheetViewHorizontalAlignmentCenter
+@property (nonatomic, assign) XYZSheetViewHorizontalAlignment horizontalAlignment UI_APPEARANCE_SELECTOR;
+
 /// 当内容高度超出maxHeightScale标记的高度时, 是否允许sheetView滚动
 /// defult YES
 @property (nonatomic, assign) BOOL allowScrollIfOutMaxHeight UI_APPEARANCE_SELECTOR;
@@ -62,12 +78,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// 隐藏动画结束后的回调
 @property (nonatomic, copy, nullable) dispatch_block_t hideCompletionBlock;
 
-/// 自动躲避键盘 (键盘弹出时 自动往上偏移键盘的高度)
+/// 自动躲避底部停靠的键盘 (跟随 keyboardLayoutGuide; 浮动/拆分键盘不避让)
 /// defult YES
 @property (nonatomic, assign) BOOL autoAvoidKeyboard;
 
 /// 自动躲避键盘时修正偏移量
-/// 键盘弹出时 默认自动往上偏移键盘的高度 此值为负数时 会增加向上偏移的距离, 此值为正数时 会减小向上偏移的距离
+/// 仅在键盘遮挡时才有意义: 此值为负数时 会增加避让距离, 此值为正数时 会减小避让距离
 /// defult 0
 @property (nonatomic, assign) CGFloat avoidKeyboardOffsetY;
 

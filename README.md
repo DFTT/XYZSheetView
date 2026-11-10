@@ -14,6 +14,7 @@
 2. 支持设置最大高度, 当内容高度超过设置的最大高度时, 自动支持滚动
 3. 支持TopLeft&TopRight圆角
 4. 支持自动躲避键盘(支持修正偏移量)
+5. 支持设置最大宽度和水平对齐(左/中/右), 仅横向 size class 为 regular 时生效, 适配iPhone Duo横屏/iPad
 
 ##### 建议用法：
 每个项目中的sheetView风格基本类似，可以继承实现一个```XXXSheetView```，业务中的sheetView在分别基于此实现, 需要重写的方法为：

@@ -72,7 +72,7 @@
     [super layoutSubviews];
     
     CGFloat width = self.contentView.bounds.size.width, height = self.contentView.bounds.size.height;
-    CGFloat lineHeight = 1.0 / [UIScreen mainScreen].scale;
+    CGFloat lineHeight = 1.0 / self.traitCollection.displayScale;
     _line.frame = CGRectMake(0, height - lineHeight, width, lineHeight);
     CGFloat offset = 15;
     _stackView.frame = CGRectMake(offset, 2, width - offset * 2, height - 4);
@@ -112,7 +112,11 @@
 
 - (void)showToView:(UIView *)view {
     if (self.actions.count == 0) return;
-
+    
+    // 二次show时 数据源可能已经变了 (内容视图只构建一次 高度约束不会重建)
+    _tableViewHeight.constant = self.cellHeight * self.actions.count;
+    [_tableView reloadData];
+    
     [super showToView:view];
 }
 
@@ -192,12 +196,10 @@
         _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         _tableView.sectionFooterHeight = _tableView.sectionHeaderHeight = 0;
         
-        if (@available(iOS 11.0, *)) {
-            _tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-        }
-        if (@available(iOS 15.0, *)) {
-            _tableView.sectionHeaderTopPadding = 0;
-        }
+        _tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        // 行内容默认会被左右安全区内缩(横屏/展开态), 导致与全宽的底部取消栏对不齐
+        _tableView.insetsContentViewsToSafeArea = NO;
+        _tableView.sectionHeaderTopPadding = 0;
         
         _tableView.tableFooterView = [[UIView alloc] init];
         [_tableView registerClass:XYZSheetCell.class forCellReuseIdentifier:NSStringFromClass(XYZSheetCell.class)];
