@@ -36,6 +36,8 @@
 ```
 
 ##### 安装：
+- Swift Package Manager（iOS 15.0+）：在 Xcode 的 `File > Add Package Dependencies…` 中输入 `https://github.com/DFTT/XYZSheetView.git`，添加 `XYZSheetView` 产品。
+  Swift 中使用 `import XYZSheetView`，Objective-C 中使用 `@import XYZSheetView;`。
 - 源码安装: 拖拽XYZSheetView/Classes文件夹到项目中即可
 - cocoapods: 
 ```
